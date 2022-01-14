@@ -43,34 +43,34 @@ module Getv
       @opts = opts
     end
 
-    def get_latest_version
+    def latest_version
       update_versions if opts[:latest_version].nil?
       opts[:latest_version]
     end
 
-    def get_versions
-      update_versions if opts[:version].nil?
+    def versions
+      update_versions if opts[:versions].nil?
       opts[:versions]
     end
 
     def update_versions
       case opts[:type]
       when 'docker'
-        versions = get_versions_using_docker
+        versions = versions_using_docker
       when 'gem'
-        versions = get_versions_using_gem
+        versions = versions_using_gem
       when 'get'
-        versions = get_versions_using_get
+        versions = versions_using_get
       when 'github_release'
-        versions = get_versions_using_github('release')
+        versions = versions_using_github('release')
       when 'github_tag'
-        versions = get_versions_using_github('tag')
+        versions = versions_using_github('tag')
       when 'index'
-        versions = get_versions_using_index
+        versions = versions_using_index
       when 'npm'
-        versions = get_versions_using_npm
+        versions = versions_using_npm
       when 'pypi'
-        versions = get_versions_using_pypi
+        versions = versions_using_pypi
       end
       select_pattern = Regexp.new(opts[:select][:search])
       versions.select! { |v| v =~ select_pattern }
@@ -93,13 +93,13 @@ module Getv
 
     private
 
-    def get_versions_using_docker
+    def versions_using_docker
       require 'docker_registry2'
       docker = DockerRegistry2.connect(opts[:url])
       docker.tags("#{opts[:owner]}/#{opts[:repo]}")['tags']
     end
 
-    def get_versions_using_gem
+    def versions_using_gem
       require 'json'
       require 'open-uri'
       require 'net/http'
@@ -108,13 +108,13 @@ module Getv
       end
     end
 
-    def get_versions_using_get
+    def versions_using_get
       require 'open-uri'
       require 'net/http'
       Net::HTTP.get(URI(opts[:url])).split("\n")
     end
 
-    def get_versions_using_github(method)
+    def versions_using_github(method)
       require 'octokit'
       if ENV['GITHUB_TOKEN']
         github = Octokit::Client.new(access_token: ENV['GITHUB_TOKEN'])
@@ -130,7 +130,7 @@ module Getv
       end
     end
 
-    def get_versions_using_index
+    def versions_using_index
       require 'open-uri'
       require 'net/http'
       require 'nokogiri'
@@ -141,14 +141,14 @@ module Getv
       end
     end
 
-    def get_versions_using_npm
+    def versions_using_npm
       require 'json'
       require 'open-uri'
       require 'net/http'
       JSON.parse(Net::HTTP.get(URI("https://registry.npmjs.org/#{opts[:npm]}")))['versions'].keys
     end
 
-    def get_versions_using_pypi
+    def versions_using_pypi
       require 'json'
       require 'open-uri'
       require 'net/http'
