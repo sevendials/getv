@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 module Getv
-  class Package
+  # package class
+  class Package # rubocop:disable Metrics/ClassLength
     attr_accessor :name, :opts
 
-    def initialize(name, opts = {})
+    def initialize(name, opts = {}) # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/AbcSize
       @name = name
       case name
       when /rubygem-.*/
@@ -17,7 +18,7 @@ module Getv
       opts = {
         type: 'github_release',
         select: {
-          search: '^\s*v?((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)\s*$',
+          search: '^\s*v?((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)\s*$', # rubocop:disable Layout/LineLength
           replace: '\1'
         },
         reject: nil,
@@ -53,25 +54,11 @@ module Getv
       opts[:versions]
     end
 
-    def update_versions
-      case opts[:type]
-      when 'docker'
-        versions = versions_using_docker
-      when 'gem'
-        versions = versions_using_gem
-      when 'get'
-        versions = versions_using_get
-      when 'github_release'
-        versions = versions_using_github('release')
-      when 'github_tag'
-        versions = versions_using_github('tag')
-      when 'index'
-        versions = versions_using_index
-      when 'npm'
-        versions = versions_using_npm
-      when 'pypi'
-        versions = versions_using_pypi
-      end
+    def update_versions # rubocop:disable Metrics/PerceivedComplexity,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/AbcSize
+      method = opts[:type].split('_')
+      method[0] = "versions_using_#{method[0]}"
+
+      versions = send(*method)
       select_pattern = Regexp.new(opts[:select][:search])
       versions.select! { |v| v =~ select_pattern }
       versions.map! { |v| v.sub(select_pattern, opts[:select][:replace]) }
@@ -114,7 +101,7 @@ module Getv
       Net::HTTP.get(URI(opts[:url])).split("\n")
     end
 
-    def versions_using_github(method)
+    def github
       require 'octokit'
       if ENV['GITHUB_TOKEN']
         github = Octokit::Client.new(access_token: ENV['GITHUB_TOKEN'])
@@ -123,6 +110,10 @@ module Getv
       else
         github = Octokit::Client.new
       end
+      github
+    end
+
+    def versions_using_github(method)
       if method == 'release'
         github.releases("#{opts[:owner]}/#{opts[:repo]}").map(&:tag_name)
       else
@@ -134,10 +125,13 @@ module Getv
       require 'open-uri'
       require 'net/http'
       require 'nokogiri'
-      if opts[:link] == 'value'
-        Nokogiri::HTML(URI.open(opts[:url])).css('a').map { |a| a.values[0] }
-      else
-        Nokogiri::HTML(URI.open(opts[:url])).css('a').map { |a| a.public_send(opts[:link]) }
+
+      Nokogiri::HTML(URI.open(opts[:url])).css('a').map do |a| # rubocop:disable Security/Open
+        if opts[:link] == 'value'
+          a.values[0]
+        else
+          a.public_send(opts[:link])
+        end
       end
     end
 
