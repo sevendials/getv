@@ -40,6 +40,44 @@ http_interactions:
   recorded_at: Sun, 16 Jan 2022 16:55:08 GMT
 - request:
     method: get
+    uri: https://auth.docker.io/token?service=registry.docker.io
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (linux x86_64) ruby/3.0.2p107
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - auth.docker.io
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 16 Jan 2022 16:55:09 GMT
+      Transfer-Encoding:
+      - chunked
+      Strict-Transport-Security:
+      - max-age=31536000
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+         "token": "XXXX",
+         "access_token": "XXXX",
+         "expires_in": 300,
+         "issued_at": "2022-01-16T16:55:09.105507094Z"
+        }
+  recorded_at: Sun, 16 Jan 2022 16:55:09 GMT
+- request:
+    method: get
     uri: https://auth.docker.io/token?account&service=registry.docker.io
     body:
       encoding: US-ASCII
@@ -150,6 +188,44 @@ http_interactions:
 
         '
   recorded_at: Sun, 16 Jan 2022 16:55:09 GMT
+- request:
+    method: get
+    uri: https://auth.docker.io/token?scope=repository:apache/superset:pull&service=registry.docker.io
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (linux x86_64) ruby/3.0.2p107
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - auth.docker.io
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 16 Jan 2022 16:55:10 GMT
+      Transfer-Encoding:
+      - chunked
+      Strict-Transport-Security:
+      - max-age=31536000
+    body:
+      encoding: UTF-8
+      string: |-
+        {
+         "token": "XXXX",
+         "access_token": "XXXX",
+         "expires_in": 300,
+         "issued_at": "2022-01-16T16:55:10.128929088Z"
+        }
+  recorded_at: Sun, 16 Jan 2022 16:55:10 GMT
 - request:
     method: get
     uri: https://auth.docker.io/token?account&scope=repository:apache/superset:pull&service=registry.docker.io
