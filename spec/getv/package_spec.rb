@@ -15,7 +15,7 @@ RSpec.describe Getv::Package, :vcr do
       @package.opts.delete :latest_version
     end
 
-    it 'returns correct docker versions' do
+    it 'returns correct versions' do
       expect(@package.opts[:versions]).to eq expected_versions
     end
 
