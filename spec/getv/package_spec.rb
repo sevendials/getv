@@ -46,4 +46,50 @@ RSpec.describe Getv::Package, :vcr do
       expect(@package.opts[:latest_version]).to eq expected_versions.last
     end
   end
+
+  context '::github_tag' do
+    let :expected_versions do
+      ['1.4.0', '1.4.1', '1.4.2', '1.4.3', '1.4.4', '1.5.0', '1.5.1', '1.6.0', '1.6.1', '1.7.0']
+    end
+    before(:each) do
+      @package = described_class.new 'webrick', type: 'github_tag', owner: 'ruby', reject: '-'
+      @package.versions
+    end
+
+    after(:each) do
+      @package.opts.delete :versions
+      @package.opts.delete :latest_version
+    end
+
+    it 'returns correct versions' do
+      expect(@package.opts[:versions][-10..-1]).to eq expected_versions
+    end
+
+    it 'returns latest version' do
+      expect(@package.opts[:latest_version]).to eq expected_versions.last
+    end
+  end
+
+  context '::github_release' do
+    let :expected_versions do
+      ['2.2.3', '2.2.4', '2.3.0', '2.3.1', '2.3.2', '2.3.3', '2.3.4', '2.3.5', '2.4.0', '2.4.1']
+    end
+    before(:each) do
+      @package = described_class.new 'harbor', type: 'github_tag', owner: 'goharbor', reject: '-'
+      @package.versions
+    end
+
+    after(:each) do
+      @package.opts.delete :versions
+      @package.opts.delete :latest_version
+    end
+
+    it 'returns correct versions' do
+      expect(@package.opts[:versions][-10..-1]).to eq expected_versions
+    end
+
+    it 'returns latest version' do
+      expect(@package.opts[:latest_version]).to eq expected_versions.last
+    end
+  end
 end
