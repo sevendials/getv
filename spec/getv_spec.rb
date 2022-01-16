@@ -6,20 +6,13 @@ RSpec.describe Getv do
   end
 end
 
-RSpec.describe Getv::Package do
-  let(:expected_versions) do
-    ['0.9.0', '1.0.0']
-  end
-
+RSpec.describe Getv::Package, :vcr do
   context '::docker' do
     it 'returns correct docker version' do
-      @package = described_class.new 'mypackage', type: 'docker', owner: 'apache', reject: '-'
-      # allow(@package).to receive(:versions_using_docker).and_return(['0.9.0', '1.0.0'])
-      require 'docker_registry2'
-      allow(DockerRegistry2).to receive(:connect).and_return(double(tags: { 'tags' => expected_versions }))
+      @package = described_class.new 'superset', type: 'docker', owner: 'apache', reject: '-'
       @package.versions
-      expect(@package.opts[:latest_version]).to eq expected_versions.last
-      expect(@package.opts[:versions]).to eq expected_versions
+      expect(@package.opts[:latest_version]).to eq '1.3.2'
+      expect(@package.opts[:versions]).to eq ['1.0.0', '1.0.1', '1.1.0', '1.2.0', '1.3.0', '1.3.1', '1.3.2']
     end
   end
 end
