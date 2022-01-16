@@ -21,7 +21,7 @@ Or install it yourself as:
 ## Usage
 
 ```
-irb(main):024:0> superset = Getv::Package.new('superset' type: 'docker', owner: 'apache', reject: '-')
+irb(main):024:0> superset = Getv::Package.new('superset', type: 'docker', owner: 'apache', reject: '-')
 =>
 #<Getv::Package:0x000055b6d2326f20
 ...
